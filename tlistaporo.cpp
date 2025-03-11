@@ -228,57 +228,63 @@ bool TListaPoro::EsVacia(){
 }
 
 bool TListaPoro::Insertar(TPoro &tlp){
-    //bucle recorrer this > comparar volumen > "si tlp.volumen=>pos.volumen and"
-    
+
     if(this->EsVacia()){
-        
+        // Si la lista está vacía, simplemente creamos un nuevo nodo.
         TListaNodo* nuevo = new TListaNodo();
         nuevo->e = tlp;
         nuevo->siguiente = NULL;
         nuevo->anterior = NULL;
 
-        this->primero=nuevo;
-        this->ultimo=nuevo;
-        this->primero->siguiente=this->ultimo;
-        //cout<<this->primero->e<<endl;
-        //cout<<this->ultimo->e<<endl;
+        this->primero = nuevo;
+        this->ultimo = nuevo;
         return true;
     }
     else if(this->Buscar(tlp)){
+        // Si el elemento ya existe, no lo insertamos.
         return false;
     }
     else{
-        TListaPosicion pos_tlp=TListaPosicion();
-        pos_tlp=this->Primera();
+        // Crear una posición inicial para empezar el recorrido
+        TListaPosicion pos_tlp = this->Primera();
 
-        while (pos_tlp.pos!=NULL){
+        // Recorrer la lista y encontrar la posición adecuada
+        while (pos_tlp.pos != NULL) {
+            // Comparamos el volumen para encontrar el lugar de inserción
+            if (tlp.Volumen() < pos_tlp.pos->e.Volumen()) {
+                // Si encontramos la posición adecuada
+                TListaNodo* nuevo = new TListaNodo();
+                nuevo->e = tlp;
+                
+                // Insertar el nuevo nodo en la posición encontrada
+                nuevo->siguiente = pos_tlp.pos;
+                nuevo->anterior = pos_tlp.pos->anterior;
 
-            if(tlp.Volumen()<=pos_tlp.pos->e.Volumen() && tlp.Volumen()>pos_tlp.Siguiente().pos->e.Volumen()){
+                if (pos_tlp.pos->anterior != NULL) {
+                    pos_tlp.pos->anterior->siguiente = nuevo;
+                }
+                pos_tlp.pos->anterior = nuevo;
 
-                TListaNodo* nuevo=new TListaNodo();
-                nuevo->e=tlp;
-                nuevo->anterior=pos_tlp.pos;
+                // Si estamos insertando en la primera posición
+                if (pos_tlp.pos == this->primero) {
+                    this->primero = nuevo;
+                }
 
-                nuevo->siguiente=pos_tlp.Siguiente().pos;
-                pos_tlp.pos->siguiente->anterior=nuevo;
-                pos_tlp.pos->siguiente=nuevo;
                 return true;
             }
-            //cout<<pos_tlp.pos->e<<endl;
-            pos_tlp=pos_tlp.Siguiente();
-        }
-        
-        TListaNodo *aux= new TListaNodo();
-        aux->e=tlp;
-        this->ultimo->siguiente=aux;
-        aux->anterior=this->ultimo;
-        aux->siguiente = NULL;
-        this->ultimo=aux;
 
-        /*cout<<this->primero->siguiente->e<<endl;
-        cout<<this->ultimo->anterior->e<<endl;
-        cout<<this->ultimo->e<<endl;*/
-        
+            // Avanzar al siguiente nodo
+            pos_tlp = pos_tlp.Siguiente();
+        }
+
+        // Si no encontramos la posición, insertamos al final
+        TListaNodo* nuevo = new TListaNodo();
+        nuevo->e = tlp;
+        nuevo->siguiente = NULL;
+        nuevo->anterior = this->ultimo;
+        this->ultimo->siguiente = nuevo;
+        this->ultimo = nuevo;
+
         return true;
     }
 }
@@ -383,20 +389,13 @@ int TListaPoro::Longitud(){
         return 0;
     }
     TListaPosicion tlp=this->Primera();
-    //tlp=;
-    /*cout<<this->Ultima().pos->e<<endl;
-    if(tlp.Siguiente().pos==NULL){
-        cout<<"a"<<endl;
-    }*/
+    
     int i=0;
-    /*if(this->primero==this->ultimo){
-        return 1;
-    }*/
+    
     while (tlp.pos!=NULL){
         i++;
         
         tlp=tlp.Siguiente();
-        //cout<<i<<": "<<tlp.pos->e<<endl;
         
     }
     return i;
