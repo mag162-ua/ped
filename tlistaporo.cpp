@@ -66,7 +66,7 @@ TListaPosicion TListaPosicion::Anterior(){
 
 TListaPosicion TListaPosicion::Siguiente(){
     TListaPosicion sig_tlp=TListaPosicion();
-    sig_tlp.pos=this->pos->anterior;
+    sig_tlp.pos=this->pos->siguiente;
     return sig_tlp;
 }
 
@@ -229,36 +229,57 @@ bool TListaPoro::EsVacia(){
 
 bool TListaPoro::Insertar(TPoro &tlp){
     //bucle recorrer this > comparar volumen > "si tlp.volumen=>pos.volumen and"
-    cout<<"b"<<endl;
+    
     if(this->EsVacia()){
         
-        this->primero->e=tlp;
-        this->ultimo->e=tlp;
-        //this->ultimo->e=tlp;
-        cout<<this->primero->e <<endl;
-        cout<<this->ultimo->e <<endl;
-        cout<<"a"<<endl;
+        TListaNodo* nuevo = new TListaNodo();
+        nuevo->e = tlp;
+        nuevo->siguiente = NULL;
+        nuevo->anterior = NULL;
+
+        this->primero=nuevo;
+        this->ultimo=nuevo;
+        this->primero->siguiente=this->ultimo;
+        //cout<<this->primero->e<<endl;
+        //cout<<this->ultimo->e<<endl;
         return true;
+    }
+    else if(this->Buscar(tlp)){
+        return false;
     }
     else{
         TListaPosicion pos_tlp=TListaPosicion();
         pos_tlp=this->Primera();
-        cout<<"c"<<endl;
+
         while (pos_tlp.pos!=NULL){
-            cout<<"d"<<endl;
-            if(tlp.Volumen()<pos_tlp.pos->e.Volumen() && tlp.Volumen()>pos_tlp.Siguiente().pos->e.Volumen()){
-                TListaNodo new_tln;
-                new_tln.e=tlp;
-                new_tln.anterior=pos_tlp.pos;
-                new_tln.siguiente=pos_tlp.Siguiente().pos;
-                pos_tlp.pos->siguiente->anterior=&new_tln;
-                pos_tlp.pos->siguiente=&new_tln;
+
+            if(tlp.Volumen()<=pos_tlp.pos->e.Volumen() && tlp.Volumen()>pos_tlp.Siguiente().pos->e.Volumen()){
+
+                TListaNodo* nuevo=new TListaNodo();
+                nuevo->e=tlp;
+                nuevo->anterior=pos_tlp.pos;
+
+                nuevo->siguiente=pos_tlp.Siguiente().pos;
+                pos_tlp.pos->siguiente->anterior=nuevo;
+                pos_tlp.pos->siguiente=nuevo;
                 return true;
             }
-            cout<<pos_tlp.pos->e <<endl;
+            //cout<<pos_tlp.pos->e<<endl;
             pos_tlp=pos_tlp.Siguiente();
         }
-        return false;
+        
+        TListaNodo *aux= new TListaNodo();
+        aux->e=tlp;
+        this->ultimo->siguiente=aux;
+        aux->anterior=this->ultimo;
+        aux->siguiente = NULL;
+        this->ultimo=aux;
+
+        /*cout<<this->primero->siguiente->e<<endl;
+        cout<<this->ultimo->anterior->e<<endl;
+        cout<<this->ultimo->e<<endl;*/
+        
+        return true;
     }
 }
 
@@ -348,7 +369,7 @@ TPoro TListaPoro::Obtener(TListaPosicion &tlp){
 bool TListaPoro::Buscar(TPoro &tlp){
     TListaPosicion pos_tlp=TListaPosicion();
     pos_tlp=this->Primera();
-    while (!(pos_tlp==this->Ultima())){
+    while (pos_tlp.pos!=NULL){
         if(pos_tlp.pos->e==tlp){
             return true;
         }
@@ -358,12 +379,25 @@ bool TListaPoro::Buscar(TPoro &tlp){
 }
 
 int TListaPoro::Longitud(){
-    TListaPosicion tlp=TListaPosicion();
-    tlp=this->Primera();
+    if(this->EsVacia()){
+        return 0;
+    }
+    TListaPosicion tlp=this->Primera();
+    //tlp=;
+    /*cout<<this->Ultima().pos->e<<endl;
+    if(tlp.Siguiente().pos==NULL){
+        cout<<"a"<<endl;
+    }*/
     int i=0;
-    while (!(tlp==this->Ultima())){
+    /*if(this->primero==this->ultimo){
+        return 1;
+    }*/
+    while (tlp.pos!=NULL){
         i++;
+        
         tlp=tlp.Siguiente();
+        //cout<<i<<": "<<tlp.pos->e<<endl;
+        
     }
     return i;
 }
