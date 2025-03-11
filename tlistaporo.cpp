@@ -71,7 +71,7 @@ TListaPosicion TListaPosicion::Siguiente(){
 }
 
 bool TListaPosicion::EsVacia(){
-    if(this->pos=NULL){
+    if(this->pos==NULL){
         return true;
     }
     return false;
@@ -115,19 +115,19 @@ bool TListaPoro::operator==(TListaPoro &tlp){
     //TPoro tp_this=this->primero->e;
     //TPoro tp_tlp=tlp.primero->e;
 
-    TListaNodo tln_this=*this->primero;
-    TListaNodo tln_tlp=*tlp.primero;
+    TListaNodo* tln_this=this->primero;
+    TListaNodo* tln_tlp=tlp.primero;
     
-    while(this->ultimo->e!=tln_this.e){
+    while(tln_this!=NULL && tln_tlp!=NULL){
         /*if(tp_this!=tp_tlp){
             return false;
         }*/
-        if(tln_tlp.e!=tln_this.e){
+        if(tln_tlp->e!=tln_this->e){
             return false;
         }
 
-        tln_this=*tln_this.siguiente;
-        tln_tlp=*tln_tlp.siguiente;
+        tln_this=tln_this->siguiente;
+        tln_tlp=tln_tlp->siguiente;
 
         //tp_this=tln_this.e;
         //tp_tlp=tln_tlp.e;
