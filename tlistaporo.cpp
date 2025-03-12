@@ -124,10 +124,11 @@ TListaPoro& TListaPoro::operator=( TListaPoro &tlp){
         delete(this->primero);
         delete(this->ultimo);
 
-        TListaNodo *pos_tlp = tlp.primero;
-        while(pos_tlp!=NULL){
-            this->Insertar(pos_tlp->e);
-            pos_tlp=pos_tlp->siguiente;
+        TListaPosicion pos_tlp=tlp.Primera();
+        while(pos_tlp.pos!=NULL){
+            TListaNodo *new_pos=new TListaNodo(*pos_tlp.pos); 
+            this->Insertar(new_pos->e);
+            pos_tlp=pos_tlp.Siguiente();
         }
     }
     else{
@@ -209,17 +210,16 @@ bool TListaPoro::EsVacia(){
 }
 
 bool TListaPoro::Insertar(TPoro &tlp){
-   
     if(this->EsVacia()){
         // Si la lista está vacía, simplemente creamos un nuevo nodo.
         TListaNodo* nuevo = new TListaNodo();
         nuevo->e = tlp;
         nuevo->siguiente = NULL;
         nuevo->anterior = NULL;
-
+        
         this->primero = nuevo;
         this->ultimo = nuevo;
-        
+    
         return true;
     }
     else if(this->Buscar(tlp)){
@@ -267,23 +267,23 @@ bool TListaPoro::Insertar(TPoro &tlp){
         nuevo->anterior = this->ultimo;
         this->ultimo->siguiente = nuevo;
         this->ultimo = nuevo;
-        
+
         return true;
     }
 }
 
 bool TListaPoro::Borrar(TPoro &tlp){
-    cout<<"a"<<endl;
+    
     if(!this->Buscar(tlp)){
         return false;
     }
-    cout<<"b"<<endl;
+    
     TListaPosicion pos_tlp=this->Primera();
 
     while (pos_tlp.pos!=NULL){
-        cout<<"d"<<endl;
+        
         if(pos_tlp.pos->e==tlp){
-            cout<<"g"<<endl;
+            
             if(!pos_tlp.pos->anterior && !pos_tlp.pos->siguiente){
                 this->primero=NULL;
                 this->ultimo=NULL;
@@ -304,11 +304,10 @@ bool TListaPoro::Borrar(TPoro &tlp){
             return true;
 
         }
-        cout<<"e"<<endl;
 
         pos_tlp=pos_tlp.Siguiente();
     }
-    cout<<"c"<<endl;
+
     return false;
 }
 
