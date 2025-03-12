@@ -13,9 +13,11 @@ TListaNodo::TListaNodo(){
 }
 
 TListaNodo::TListaNodo(const TListaNodo &tln){
+    
     this->e=tln.e;
     this->anterior=tln.anterior;
     this->siguiente=tln.siguiente;
+
 }
 
 TListaNodo::~TListaNodo(){ //PREGUNTAR
@@ -25,9 +27,10 @@ TListaNodo::~TListaNodo(){ //PREGUNTAR
 }
 
 TListaNodo& TListaNodo::operator=(const TListaNodo &tln){
-    this->e=tln.e;
-    this->anterior=tln.anterior;
-    this->siguiente=tln.siguiente;
+
+    this->e=TPoro(tln.e);
+    this->anterior=tln.anterior ? new TListaNodo(*tln.anterior) : nullptr;
+    this->siguiente=tln.anterior ? new TListaNodo(*tln.siguiente) : nullptr;
     return *this;
 }
 
@@ -38,7 +41,7 @@ TListaPosicion::TListaPosicion(){
 }
 
 TListaPosicion::TListaPosicion(TListaPosicion &tlp){
-    this->pos=tlp.pos;
+    this->pos=new TListaNodo(*tlp.pos);
 }
 
 TListaPosicion::~TListaPosicion(){
@@ -47,15 +50,12 @@ TListaPosicion::~TListaPosicion(){
 }
 
 TListaPosicion& TListaPosicion::operator=(const TListaPosicion &tlp){
-    this->pos=tlp.pos;
+    this->pos= tlp.pos? new TListaNodo(*tlp.pos): NULL;
     return *this;
 }
 
 bool TListaPosicion::operator==(const TListaPosicion &tlp){
-    if(this->pos==tlp.pos){
-        return true;
-    }
-    return false;
+    return this->pos && tlp.pos && this->pos->e == tlp.pos->e; //comprueba no esten vacios y ambos sean iguales
 }
 
 TListaPosicion TListaPosicion::Anterior(){
@@ -81,19 +81,40 @@ bool TListaPosicion::EsVacia(){
 
 //Ordenada por volumen
 
+ostream& operator<<(ostream &os, TListaPoro &tlp){
+    os<<"(";
+    TListaNodo n;
+    if(!tlp.EsVacia()){
+        for(int i=0;i<tlp.Longitud();i++){
+            
+            if(i!=tlp.Longitud()-1){
+                os<<" ";
+            }
+        }
+        
+    }
+    os<<")";
+    return os;
+}
+
 TListaPoro::TListaPoro(){
     this->primero=new TListaNodo();
     this->ultimo=new TListaNodo();
 }
 
 TListaPoro::TListaPoro(TListaPoro &tlp){
-    this->primero= new TListaNodo(*tlp.primero);
-    this->ultimo=new TListaNodo(*tlp.ultimo);
+    this->primero = NULL;
+    this->ultimo = NULL;
+    TListaNodo *actual = tlp.primero;
+    while (actual) {
+        this->Insertar(actual->e);
+        actual = actual->siguiente;
+    }
 }
 
 TListaPoro::~TListaPoro(){
-    delete(this->primero);
-    delete(this->ultimo);
+    this->primero=NULL;
+    this->ultimo=NULL;
 }
 
 TListaPoro& TListaPoro::operator=( TListaPoro &tlp){
@@ -112,16 +133,12 @@ TListaPoro& TListaPoro::operator=( TListaPoro &tlp){
 }
 
 bool TListaPoro::operator==(TListaPoro &tlp){
-    //TPoro tp_this=this->primero->e;
-    //TPoro tp_tlp=tlp.primero->e;
 
     TListaNodo* tln_this=this->primero;
     TListaNodo* tln_tlp=tlp.primero;
     
     while(tln_this!=NULL && tln_tlp!=NULL){
-        /*if(tp_this!=tp_tlp){
-            return false;
-        }*/
+
         if(tln_tlp->e!=tln_this->e){
             return false;
         }
@@ -129,16 +146,11 @@ bool TListaPoro::operator==(TListaPoro &tlp){
         tln_this=tln_this->siguiente;
         tln_tlp=tln_tlp->siguiente;
 
-        //tp_this=tln_this.e;
-        //tp_tlp=tln_tlp.e;
     }
     return true;
 }
 
 TListaPoro TListaPoro::operator+(TListaPoro &tlp){
-    //TPoro tp_this=this->primero->e;
-    //TPoro tp_tlp=tlp.primero->e;
-
     
     TListaNodo tln_tlp=*tlp.primero;
 
@@ -221,14 +233,18 @@ TListaPoro TListaPoro::operator-(TListaPoro &tlp){
 }
 
 bool TListaPoro::EsVacia(){
+    if(this->primero==NULL){
+        return true;
+    }
     if(this->primero->e.EsVacio() && this->ultimo->e.EsVacio()){
+
         return true;
     }
     return false;
 }
 
 bool TListaPoro::Insertar(TPoro &tlp){
-
+   
     if(this->EsVacia()){
         // Si la lista está vacía, simplemente creamos un nuevo nodo.
         TListaNodo* nuevo = new TListaNodo();
@@ -238,6 +254,7 @@ bool TListaPoro::Insertar(TPoro &tlp){
 
         this->primero = nuevo;
         this->ultimo = nuevo;
+        
         return true;
     }
     else if(this->Buscar(tlp)){
@@ -245,6 +262,7 @@ bool TListaPoro::Insertar(TPoro &tlp){
         return false;
     }
     else{
+
         // Crear una posición inicial para empezar el recorrido
         TListaPosicion pos_tlp = this->Primera();
 
@@ -284,7 +302,7 @@ bool TListaPoro::Insertar(TPoro &tlp){
         nuevo->anterior = this->ultimo;
         this->ultimo->siguiente = nuevo;
         this->ultimo = nuevo;
-
+        
         return true;
     }
 }
@@ -345,7 +363,6 @@ bool TListaPoro::Borrar(TListaPosicion &tlp){
 
 TPoro TListaPoro::Obtener(TListaPosicion &tlp){
     if(!tlp.EsVacia() && this->Buscar(tlp.pos->e)){
-        //if(){
         TPoro pos_p;
 
         TListaPosicion pos_tlp=TListaPosicion();
@@ -364,7 +381,6 @@ TPoro TListaPoro::Obtener(TListaPosicion &tlp){
             }
             pos_tlp=pos_tlp.Siguiente();
         }
-        //}
         return TPoro();
     }
     else{
@@ -373,8 +389,8 @@ TPoro TListaPoro::Obtener(TListaPosicion &tlp){
 }
 
 bool TListaPoro::Buscar(TPoro &tlp){
-    TListaPosicion pos_tlp=TListaPosicion();
-    pos_tlp=this->Primera();
+
+    TListaPosicion pos_tlp=this->Primera();
     while (pos_tlp.pos!=NULL){
         if(pos_tlp.pos->e==tlp){
             return true;
@@ -385,19 +401,20 @@ bool TListaPoro::Buscar(TPoro &tlp){
 }
 
 int TListaPoro::Longitud(){
+    
     if(this->EsVacia()){
         return 0;
     }
+
     TListaPosicion tlp=this->Primera();
-    
+
     int i=0;
-    
+
     while (tlp.pos!=NULL){
         i++;
-        
         tlp=tlp.Siguiente();
-        
     }
+
     return i;
 }
 
@@ -409,7 +426,7 @@ TListaPosicion TListaPoro::Primera(){
 
 TListaPosicion TListaPoro::Ultima(){
     TListaPosicion tlp=TListaPosicion();
-    tlp.pos=this->primero;
+    tlp.pos=this->ultimo;
     return tlp;
 }
 
@@ -419,7 +436,7 @@ TListaPoro TListaPoro::ExtraerRango (int n1, int n2){
         return rang_tlp;
     }
     for(int i=1;i<=this->Longitud();i++){
-
+        
         TListaPosicion pos_tlp=TListaPosicion();
         pos_tlp=this->Primera();
 
@@ -442,4 +459,21 @@ TListaPoro TListaPoro::ExtraerRango (int n1, int n2){
         
     }
     return rang_tlp;
+
+    ///////////
+
+    /*TListaPoro resultado;
+    if (n2 < n1 || EsVacia()) return resultado;
+
+    TListaPosicion pos = Primera();
+    int contador = 1;
+    while (!pos.EsVacia() && contador <= n2) {
+        if (contador >= n1) {
+            resultado.Insertar(pos.pos->e);
+            Borrar(pos);
+        }
+        pos = pos.Siguiente();
+        contador++;
+    }
+    return resultado;*/
 }
