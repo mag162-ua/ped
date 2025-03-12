@@ -60,7 +60,7 @@ TVectorPoro& TVectorPoro::operator=(const TVectorPoro &tvp){
 
     this->dimension=tvp.dimension;
     for (int i = 0; i < this->dimension; i++) {
-        this->datos[i] = tvp.datos[i];  
+        this->datos[i] = TPoro(tvp.datos[i]);  
     }
     
     return *this;
@@ -176,5 +176,6 @@ bool TVectorPoro::Redimensionar(int n){
                 this->datos[i]=auxtp[i];
             }
         }
+        return true;
     }
 }

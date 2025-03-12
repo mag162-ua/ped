@@ -4,9 +4,12 @@
 #include "./../include/tporo.h"
 #include "./../include/tvectorporo.h"
 
+class TListaPoro;
+
 class TListaNodo{
     friend class TListaPosicion;
     friend class TListaPoro;
+    friend ostream & operator<<(ostream &os, TListaPoro &tlp);
     private:
         TPoro e;
         TListaNodo *anterior;
@@ -20,6 +23,7 @@ class TListaNodo{
 
 class TListaPosicion{
     friend class TListaPoro;
+    friend ostream & operator<<(ostream &os, TListaPoro &tlp);
     private:
         TListaNodo *pos;
     public:
