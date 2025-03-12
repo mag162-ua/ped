@@ -83,13 +83,15 @@ bool TListaPosicion::EsVacia(){
 
 ostream& operator<<(ostream &os, TListaPoro &tlp){
     os<<"(";
-    TListaNodo n;
+    TListaPosicion pos=tlp.Primera();
     if(!tlp.EsVacia()){
         for(int i=0;i<tlp.Longitud();i++){
-            
+            //cout<<pos.pos;
+            os<<pos.pos->e;
             if(i!=tlp.Longitud()-1){
                 os<<" ";
             }
+            pos=pos.Siguiente();
         }
         
     }
@@ -122,8 +124,11 @@ TListaPoro& TListaPoro::operator=( TListaPoro &tlp){
         delete(this->primero);
         delete(this->ultimo);
 
-        this->primero=new TListaNodo(*tlp.primero);
-        this->ultimo=new TListaNodo(*tlp.ultimo);
+        TListaNodo *pos_tlp = tlp.primero;
+        while(pos_tlp!=NULL){
+            this->Insertar(pos_tlp->e);
+            pos_tlp=pos_tlp->siguiente;
+        }
     }
     else{
         this->primero=NULL;
@@ -151,85 +156,45 @@ bool TListaPoro::operator==(TListaPoro &tlp){
 }
 
 TListaPoro TListaPoro::operator+(TListaPoro &tlp){
-    
-    TListaNodo tln_tlp=*tlp.primero;
-
-    /*while(this->ultimo->e!=tln_this.e){
-        exist=false;
-        while(tlp.ultimo->e!=tln_tlp.e){
-            if(tp_this==tp_tlp){
-                exist=true;
-            }
-            
-            tln_tlp=*tln_tlp.siguiente;
-            tp_tlp=tln_tlp.e;
-        }
-        tln_this=*tln_this.siguiente;
-        tp_this=tln_this.e;
-    }*/
-    //return true;
-    bool exist;
-    TListaPoro listmas=TListaPoro(*this);
-
-    while(tlp.ultimo->e!=tln_tlp.e){ //recorre pasado por parametro
-        exist=false;
-        TListaNodo tln_this=*this->primero;
-        while(this->ultimo->e!=tln_this.e){ //recorre this
-            if(tln_tlp.e==tln_this.e){ //si this y parametro coinciden
-                exist=true;
-            }
-            tln_this=*tln_this.siguiente; //siguiente posición this
-            //tp_this=tln_this.e;
-
-        }
-        if(!exist){ //Si no coincide
-            TListaNodo mas=TListaNodo(tln_this);
-            this->ultimo->siguiente=&mas;
-            TListaNodo ant=*listmas.ultimo;
-            listmas.ultimo=&mas;
-            listmas.ultimo->anterior=&ant;
-        }
-        tln_tlp=*tln_tlp.siguiente; //siguiente de parametro
-        //tp_tlp=tln_tlp.e;
+    TListaPoro *list_mas;
+    if(tlp.EsVacia()){
+        list_mas=this;
     }
-    return listmas;
+    else if(this->EsVacia()){
+        list_mas=&tlp;
+    }
+    else{
+        list_mas=this;
+        TListaPosicion pos=tlp.Primera();
+        while(pos.pos!=NULL){
+            list_mas->Insertar(pos.pos->e);
+
+            pos=pos.Siguiente();
+        }
+    }
+    return *list_mas;
 }
 
 TListaPoro TListaPoro::operator-(TListaPoro &tlp){
-
-    TListaNodo tln_this=*this->primero;
-    
-
-    bool exist;
-    TListaPoro listmenos=TListaPoro();
-
-    while(this->ultimo->e!=tln_this.e){ //Recorre this
-        exist=false;
-        TListaNodo tln_tlp=*tlp.primero;
-        while(tlp.ultimo->e!=tln_tlp.e){ //recorre parametro
-            if(tln_tlp.e==tln_this.e){ //si coinciden
-                exist=true;
+    TListaPoro *list_menos;
+    if(tlp.EsVacia()){
+        list_menos=this;
+    }
+    else if(this->EsVacia()){
+        list_menos=&tlp;
+    }
+    else{
+        list_menos=this;
+        TListaPosicion pos=tlp.Primera();
+        while(pos.pos!=NULL){
+            if(this->Buscar(pos.pos->e)){
+                list_menos->Borrar(pos.pos->e);
             }
 
-            tln_tlp=*tln_tlp.siguiente;//siguiente de parametro
-        }
-        if(!exist){
-            if(listmenos.primero==NULL){
-                listmenos.primero=new TListaNodo(tln_this);
-                listmenos.ultimo=new TListaNodo(tln_this);
-            }
-            else{
-                TListaNodo menos=TListaNodo(tln_this);
-                this->ultimo->siguiente=&menos;
-                TListaNodo ant=*listmenos.ultimo;
-                listmenos.ultimo=&menos;
-                listmenos.ultimo->anterior=&ant;
-            }
-            
+            pos=pos.Siguiente();
         }
     }
-    return listmenos;
-
+    return *list_menos;
 }
 
 bool TListaPoro::EsVacia(){
@@ -308,26 +273,42 @@ bool TListaPoro::Insertar(TPoro &tlp){
 }
 
 bool TListaPoro::Borrar(TPoro &tlp){
-
+    cout<<"a"<<endl;
     if(!this->Buscar(tlp)){
         return false;
     }
+    cout<<"b"<<endl;
+    TListaPosicion pos_tlp=this->Primera();
 
-    TListaPosicion pos_tlp=TListaPosicion();
-    pos_tlp=this->Primera();
-
-    while (!(pos_tlp==this->Ultima())){
+    while (pos_tlp.pos!=NULL){
+        cout<<"d"<<endl;
         if(pos_tlp.pos->e==tlp){
-            
-            pos_tlp.pos->anterior->siguiente=pos_tlp.pos->siguiente;
-            pos_tlp.pos->siguiente->anterior=pos_tlp.pos->anterior;
+            cout<<"g"<<endl;
+            if(!pos_tlp.pos->anterior && !pos_tlp.pos->siguiente){
+                this->primero=NULL;
+                this->ultimo=NULL;
+            }
+            else if(!pos_tlp.pos->anterior){
+                this->primero=this->primero->siguiente;
+                this->primero->anterior=NULL;
+            }
+            else if(!pos_tlp.pos->siguiente){
+                this->ultimo=this->ultimo->anterior;
+                this->ultimo->siguiente=NULL;
+            }
+            else{
+                pos_tlp.pos->anterior->siguiente=pos_tlp.pos->siguiente ? pos_tlp.pos->siguiente: NULL;
+                pos_tlp.pos->siguiente->anterior=pos_tlp.pos->anterior ? pos_tlp.pos->anterior: NULL;
+            }
             
             return true;
 
         }
+        cout<<"e"<<endl;
 
         pos_tlp=pos_tlp.Siguiente();
     }
+    cout<<"c"<<endl;
     return false;
 }
 
@@ -340,16 +321,16 @@ bool TListaPoro::Borrar(TListaPosicion &tlp){
     if(tlp.EsVacia()){
         return false;
     }
-    else{
+    return this->Borrar(tlp.pos->e);
+    /*else{
 
-        TListaPosicion pos_tlp=TListaPosicion();
-        pos_tlp=this->Primera();
+        TListaPosicion pos_tlp=this->Primera();
 
-        while (!(pos_tlp==this->Ultima())){
+        while (pos_tlp.pos!=NULL){
             if(pos_tlp.pos==tlp.pos){
                 
-                pos_tlp.pos->anterior->siguiente=pos_tlp.pos->siguiente;
-                pos_tlp.pos->siguiente->anterior=pos_tlp.pos->anterior;
+                pos_tlp.pos->anterior->siguiente=pos_tlp.pos->siguiente ? pos_tlp.pos->siguiente: NULL;
+                pos_tlp.pos->siguiente->anterior=pos_tlp.pos->anterior ? pos_tlp.pos->anterior: NULL;
                 
                 return true;
 
@@ -358,17 +339,16 @@ bool TListaPoro::Borrar(TListaPosicion &tlp){
             pos_tlp=pos_tlp.Siguiente();
         }
         return false;
-    }
+    }*/
 }
 
 TPoro TListaPoro::Obtener(TListaPosicion &tlp){
     if(!tlp.EsVacia() && this->Buscar(tlp.pos->e)){
         TPoro pos_p;
 
-        TListaPosicion pos_tlp=TListaPosicion();
-        pos_tlp=this->Primera();
+        TListaPosicion pos_tlp=this->Primera();
 
-        while (!(pos_tlp==this->Ultima())){
+        while (pos_tlp.pos!=NULL){
             if(pos_tlp==tlp){
                 if(pos_tlp.pos->e.EsVacio()){
                     pos_p=TPoro();
