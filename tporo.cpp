@@ -4,7 +4,7 @@ using namespace std;
 
 #include "./../include/tporo.h"
 
-ostream& operator<<(ostream &os, TPoro &poro){
+ostream& operator<<(ostream &os,const TPoro &poro){
     if(!poro.EsVacio()){ 
         os.setf(ios::fixed); 
         os.precision( 2 ); 

@@ -2,7 +2,7 @@
 #define TPoro_
 
 class TPoro{
-    friend ostream& operator<<(ostream &os, TPoro &tp);
+    friend ostream& operator<<(ostream &os,const TPoro &tp);
     private:
         int x;
         int y;
