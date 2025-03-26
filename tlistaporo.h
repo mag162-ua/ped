@@ -9,7 +9,7 @@ class TListaPoro;
 class TListaNodo{
     friend class TListaPosicion;
     friend class TListaPoro;
-    friend ostream & operator<<(ostream &os, TListaPoro &tlp);
+    friend ostream & operator<<(ostream &os,const TListaPoro &tlp);
     private:
         TPoro e;
         TListaNodo *anterior;
@@ -23,7 +23,7 @@ class TListaNodo{
 
 class TListaPosicion{
     friend class TListaPoro;
-    friend ostream & operator<<(ostream &os, TListaPoro &tlp);
+    friend ostream & operator<<(ostream &os,const TListaPoro &tlp);
     private:
         TListaNodo *pos;
     public:
@@ -39,7 +39,7 @@ class TListaPosicion{
 };
 
 class TListaPoro{
-    friend ostream & operator<<(ostream &os, TListaPoro &tlp);
+    friend ostream & operator<<(ostream &os,const TListaPoro &tlp);
     private:
         TListaNodo *primero;
         TListaNodo *ultimo;
@@ -52,15 +52,15 @@ class TListaPoro{
         bool operator==(TListaPoro &tlp);
         TListaPoro operator+(TListaPoro &tlp);
         TListaPoro operator-(TListaPoro &tlp);
-        bool EsVacia();
+        bool EsVacia() const;
         bool Insertar(TPoro &tlp);
         bool Borrar(TPoro &tlp);
         bool Borrar(TListaPosicion &tlp);
         TPoro Obtener(TListaPosicion &tlp);
         bool Buscar(TPoro &tlp);
-        int Longitud();
-        TListaPosicion Primera();
-        TListaPosicion Ultima();
+        int Longitud() const;
+        TListaPosicion Primera() const;
+        TListaPosicion Ultima()const;
         TListaPoro ExtraerRango (int n1, int n2);
 };
 

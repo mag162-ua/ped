@@ -82,7 +82,7 @@ bool TListaPosicion::EsVacia(){ //True si el puntero pos es NULL, false en caso 
 
 //Ordenada por volumen
 
-ostream& operator<<(ostream &os, TListaPoro &tlp){ //operador de salida
+ostream& operator<<(ostream &os,const TListaPoro &tlp){ //operador de salida
     os<<"(";
     TListaPosicion pos=tlp.Primera();
     if(!tlp.EsVacia()){ //Comprueba que no este vacia
@@ -183,7 +183,7 @@ TListaPoro TListaPoro::operator-(TListaPoro &tlp){
     list_menos=this; //copiamos los valores de this object
     TListaPosicion pos=tlp.Primera(); //asigna la primera posición de la lista por parametro
     while(pos.pos!=NULL){ // rescorremos la lista pasada por parametro
-        
+        //cout<<"a"<<endl;
         if(this->Buscar(pos.pos->e)){ //Busca el nodo de la lista pasada por parametro
             list_menos->Borrar(pos.pos->e); //borra el nodo de la lista
         }
@@ -194,7 +194,7 @@ TListaPoro TListaPoro::operator-(TListaPoro &tlp){
     return *list_menos;
 }
 
-bool TListaPoro::EsVacia(){
+bool TListaPoro::EsVacia() const{
     if(this->primero==NULL){ //compruba que la primera posición sea NULL
         return true;
     }
@@ -230,19 +230,20 @@ bool TListaPoro::Insertar(TPoro &tlp){
 
                 TListaNodo* nuevo = new TListaNodo(); //crea nodo
                 nuevo->e = tlp; //Copia los valores del nodo pasado por parametro
-                
+
                 nuevo->siguiente = pos_tlp.pos; //enlaza los nodos nuevo y actual
-                nuevo->anterior = pos_tlp.pos->anterior; //enlaza los anterior del actual y nodos nuevo
+                
 
                 if (pos_tlp.pos->anterior != NULL) { //Si la psoción anterior a la actual no es NULL
                     pos_tlp.pos->anterior->siguiente = nuevo; //Se enlaza siguiente del anterior de la posición actual y nuevo
+                    nuevo->anterior = pos_tlp.pos->anterior; //enlaza los anterior del actual y nodos nuevo
                 }
-                pos_tlp.pos->anterior = nuevo; //Se enlaza el anterior de la posición actual y nuevo
-
-                /*if (pos_tlp.pos == this->primero) { //Si 
-                    this->primero = nuevo;
-                }*/
-
+                else{
+                    pos_tlp.pos->anterior=nuevo;
+                    nuevo->anterior = NULL;
+                    this->primero=nuevo;
+                }
+                
                 return true;
             }
 
@@ -350,7 +351,7 @@ bool TListaPoro::Buscar(TPoro &tlp){ //Busca si existe el nodo
     return false;
 }
 
-int TListaPoro::Longitud(){ //devuelve la posición de la lista
+int TListaPoro::Longitud() const { //devuelve la posición de la lista
     
     if(this->EsVacia()){ //Si está vacía devuelve 0
         return 0;
@@ -368,13 +369,13 @@ int TListaPoro::Longitud(){ //devuelve la posición de la lista
     return i;
 }
 
-TListaPosicion TListaPoro::Primera(){ //Devuelve un objeto TListaPosición que apunta al primer nodo de la lista
+TListaPosicion TListaPoro::Primera() const { //Devuelve un objeto TListaPosición que apunta al primer nodo de la lista
     TListaPosicion tlp=TListaPosicion();
     tlp.pos=this->primero;
     return tlp;
 }
 
-TListaPosicion TListaPoro::Ultima(){ //Devuelve un objeto TListaPosición que apunta al ultimo nodo de la lista
+TListaPosicion TListaPoro::Ultima() const { //Devuelve un objeto TListaPosición que apunta al ultimo nodo de la lista
     TListaPosicion tlp=TListaPosicion();
     tlp.pos=this->ultimo;
     return tlp;

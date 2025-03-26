@@ -95,12 +95,7 @@ bool TPoro::operator==(const TPoro &tp){ //Compara que los valores de los atribu
         color_=false;
     }
     else{
-        for(int i=0;color[i]!='\0';i++){
-            if(color[i]!=tp.Color()[i]){
-                color_=false;
-                break;
-            }
-        }
+        color_=(*color==*tp.color);
     }
     if(x==tp.PosicionX() && y==tp.PosicionY() && volumen==tp.Volumen() && color_){
         return true;
@@ -111,7 +106,7 @@ bool TPoro::operator==(const TPoro &tp){ //Compara que los valores de los atribu
 }
 
 bool TPoro::operator!=(const TPoro &tp){ //Compara que los valores de los atributos no sean los mismos
-    return *this==tp;
+    return !(*this==tp);
 }
 
 void TPoro::Posicion(int x,int y){ //asigna la coordenada x y
