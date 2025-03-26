@@ -8,11 +8,10 @@ using namespace std;
 ostream& operator<<(ostream &os, TVectorPoro &tvp){
     os<<"[";
     for(int i=0;i<tvp.dimension;i++){
-        if(!(tvp.datos[i].EsVacio())){
-            os<<i+1<<" "<<tvp.datos[i];
-            if(i!=tvp.dimension-1){
-                os<<" ";
-            }
+        
+        os<<i+1<<" "<<tvp.datos[i];
+        if(i!=tvp.dimension-1){
+            os<<" ";
         }
         
     }
@@ -129,7 +128,46 @@ bool TVectorPoro::Redimensionar(int n){ //Modifica la longitud del vector
     }
     
     int longi=this->dimension; 
-    TPoro auxtp[this->dimension];
+    TPoro* auxtp=new TPoro[n];
+
+    if(n<this->dimension){
+
+        for(int i=0;i<n;i++){
+            auxtp[i]=this->datos[i];
+        }
+
+        delete[] this->datos;
+        this->datos=new TPoro[n];
+        this->dimension=n;
+
+        for(int i=0;i<n;i++){
+            this->datos[i]=auxtp[i];
+        }
+
+        return true;
+    }
+    else if(n>this->dimension){
+
+        for(int i=0;i<n;i++){
+            if(i<this->Longitud()){
+                auxtp[i]=this->datos[i];
+            }
+            else{
+                auxtp[i]=TPoro();
+            }
+        }
+
+        delete[] this->datos;
+        this->datos=new TPoro[n];
+        this->dimension=n;
+
+        for(int i=0;i<n;i++){
+            this->datos[i]=auxtp[i];
+        }
+
+        return true;
+
+    }
 
     for(int i=0;i<this->dimension;i++){ //copia de los valores de this en auxiliar
         auxtp[i]=this->datos[i];

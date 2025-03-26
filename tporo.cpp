@@ -1,6 +1,7 @@
 //MARTÍN AZNAR GARCÍA, 51797315G
 
-#include <iostream>
+#include<iostream>
+#include<cctype>
 
 using namespace std;
 
@@ -42,25 +43,24 @@ TPoro::TPoro(int x, int y, double v){ //Constructor de inicialización
 TPoro::TPoro(int x,int y,double v, char *c){ //Constructor de inicialización con color
     
     if(c!=NULL){  //Pone las letras mayusculas a minusculas
-        char diff=('a'-'A');
         char* min_c= new char;
         int i;
         for(i=0;c[i]!='\0';i++){
-            if(c[i]>='A' && c[i]<='Z'){
-                min_c[i]= c[i]+diff;
-            }
-            else{
-                min_c[i]= c[i];
-            }
+           min_c[i]=tolower(c[i]);
         }
         min_c[i+1]='\0';
+        this->x=x;
+        this->y=y;
+        this->volumen=v;
         this->color=min_c;
     }
+    else{
 
     this->x=x;
     this->y=y;
     this->volumen=v;
     this->color=c;
+    }
     
 }
 
@@ -87,7 +87,22 @@ TPoro& TPoro::operator=(const TPoro &tp){ //Iguala los atributos
 }
 
 bool TPoro::operator==(const TPoro &tp){ //Compara que los valores de los atributos sean los mismos
-    if(x==tp.PosicionX() && y==tp.PosicionY() && volumen==tp.Volumen() && color==tp.Color()){
+    bool color_=true;
+    if(this->color==NULL && tp.Color()==NULL){
+        color_=true;
+    }
+    else if (this->color==NULL || tp.Color()==NULL){
+        color_=false;
+    }
+    else{
+        for(int i=0;color[i]!='\0';i++){
+            if(color[i]!=tp.Color()[i]){
+                color_=false;
+                break;
+            }
+        }
+    }
+    if(x==tp.PosicionX() && y==tp.PosicionY() && volumen==tp.Volumen() && color_){
         return true;
     }
     else{
@@ -96,12 +111,7 @@ bool TPoro::operator==(const TPoro &tp){ //Compara que los valores de los atribu
 }
 
 bool TPoro::operator!=(const TPoro &tp){ //Compara que los valores de los atributos no sean los mismos
-    if(x==tp.PosicionX() && y==tp.PosicionY() && volumen==tp.Volumen() && color==tp.Color()){
-        return false;
-    }
-    else{
-        return true;
-    }
+    return *this==tp;
 }
 
 void TPoro::Posicion(int x,int y){ //asigna la coordenada x y
@@ -114,7 +124,17 @@ void TPoro::Volumen(double v){ //asigna el volumen
 }
 
 void TPoro::Color(char *c){ //asigna el color 
-    this->color=c;
+    if(c==NULL){
+        this->color=c;
+    }
+    else{
+        char* min_c= new char;
+        int i;
+        for(i=0;c[i]!='\0';i++){
+           min_c[i]=tolower(c[i]);
+        }
+        this->color=min_c;
+    }
 }
 
 int TPoro::PosicionX() const{ //DEvuelve x
