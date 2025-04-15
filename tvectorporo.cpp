@@ -5,12 +5,12 @@ using namespace std;
 #include "./../include/tporo.h"
 #include "./../include/tvectorporo.h"
 
-ostream& operator<<(ostream &os, TVectorPoro &tvp){
+ostream& operator<<(ostream &os,TVectorPoro &tvp){
     os<<"[";
-    for(int i=0;i<tvp.dimension;i++){
+    for(int i=0;i<tvp.Longitud();i++){
         
         os<<i+1<<" "<<tvp.datos[i];
-        if(i!=tvp.dimension-1){
+        if(i!=tvp.Longitud()-1){
             os<<" ";
         }
         

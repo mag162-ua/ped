@@ -1,6 +1,7 @@
 #ifndef TPoro_
 #define TPoro_
-
+#include<iostream>
+using namespace std;
 class TPoro{
     friend ostream& operator<<(ostream &os,const TPoro &tp);
     private:
