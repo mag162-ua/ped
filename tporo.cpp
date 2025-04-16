@@ -8,6 +8,7 @@ using namespace std;
 #include "./../include/tporo.h"
 
 ostream& operator<<(ostream &os,const TPoro &poro){ 
+    //cout<<poro.PosicionX()<<poro.PosicionY()<<poro.Volumen()<<endl;
     if(!poro.EsVacio()){ //Si no esta vacio
         os.setf(ios::fixed); 
         os.precision( 2 ); 
@@ -79,6 +80,7 @@ TPoro::~TPoro(){ //DEstructor
 }
 
 TPoro& TPoro::operator=(const TPoro &tp){ //Iguala los atributos
+    //cout<<"b"<<tp<<endl;
     x=tp.PosicionX();
     y=tp.PosicionY();
     volumen=tp.Volumen();

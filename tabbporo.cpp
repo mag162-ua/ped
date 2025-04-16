@@ -40,16 +40,17 @@ ostream& operator<<(ostream &os,TABBPoro &poro){
     return os;
 }
 
-void TABBPoro::InordenAux(const TVectorPoro &v,int &pos){
-    if (this->EsVacio()){
+void TABBPoro::InordenAux(TVectorPoro &v,int &pos) const{
+    if (!this->EsVacio()){
+
         nodo->iz.InordenAux(v, pos);         // Visitar subárbol izquierdo
-        v[pos] = nodo->item;                 // Visitar nodo actual (la raíz)
+        v[pos] = this->nodo->item;           // Visitar nodo actual (la raíz)
         pos++;                               // Incrementar posición
         nodo->de.InordenAux(v, pos);         // Visitar subárbol derecho
     }
 }
 
-void TABBPoro::PreordenAux(const TVectorPoro &v,int &pos){
+void TABBPoro::PreordenAux(TVectorPoro &v,int &pos){
     if (this->EsVacio()){
         v[pos] = nodo->item;                 // Visitar nodo actual (la raíz)
         pos++;                               // Incrementar posición
@@ -58,7 +59,7 @@ void TABBPoro::PreordenAux(const TVectorPoro &v,int &pos){
     }
 }
 
-void TABBPoro::PostordenAux(const TVectorPoro &v,int &pos){
+void TABBPoro::PostordenAux(TVectorPoro &v,int &pos){
     if (this->EsVacio())
     {
         nodo->iz.PostordenAux(v, pos);       // Visitar subárbol izquierdo
@@ -121,6 +122,7 @@ bool TABBPoro::Insertar(TPoro &tp){
             this->nodo=new TNodoABB();
         }
         this->nodo->item=tp;
+        //cout<<this->nodo->item<<endl;
         return true;
     }
     if(this->Buscar(tp)){
@@ -187,7 +189,7 @@ int TABBPoro::NodosHoja()const{
     return 0 + this->nodo->iz.Nodos() + this->nodo->de.Nodos();
 }
 
-TVectorPoro TABBPoro::Inorden(){
+TVectorPoro TABBPoro::Inorden() const{
     // Posición en el vector que almacena el recorrido
     int posicion = 1;
 

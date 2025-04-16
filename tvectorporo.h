@@ -2,7 +2,7 @@
 #define TVectorPoro_
 
 class TVectorPoro{
-    friend ostream& operator<<(ostream &os, TVectorPoro &tvp);
+    friend ostream& operator<<(ostream &os,const TVectorPoro &tvp);
     
     private:
         int dimension;

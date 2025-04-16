@@ -5,12 +5,13 @@ using namespace std;
 #include "./../include/tporo.h"
 #include "./../include/tvectorporo.h"
 
-ostream& operator<<(ostream &os,TVectorPoro &tvp){
+ostream& operator<<(ostream &os,const TVectorPoro &tvp){
     os<<"[";
-    for(int i=0;i<tvp.Longitud();i++){
+    for(int i=1;i<=tvp.Longitud();i++){
         
-        os<<i+1<<" "<<tvp.datos[i];
-        if(i!=tvp.Longitud()-1){
+        os<<i<<" "<<tvp[i];
+        //cout<<tvp[i].PosicionX();
+        if(i!=tvp.Longitud()){
             os<<" ";
         }
         
@@ -97,6 +98,7 @@ TPoro& TVectorPoro::operator[](int n){ //Accede a la posición n-1 del vector
     if(n>this->dimension){
         return this->error;
     }
+    //cout<<"a"<<this->datos[n-1]<<endl;
     return this->datos[n-1];
 }
 
@@ -104,6 +106,7 @@ TPoro TVectorPoro::operator[](int n) const{ //Accede a la posición n-1 del vect
     if(n>this->dimension){
         return this->error;
     }
+    //cout<<"e "<<this->datos[n-1]<<endl;
     return this->datos[n-1];
 }
 

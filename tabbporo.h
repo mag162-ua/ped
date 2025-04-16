@@ -1,9 +1,11 @@
 #ifndef _TABB_
 
+#define _TABB_
+
 #include<iostream>
 using namespace std;
 
-#define _TABB_
+//#define _TABB_
 #include "./../include/tporo.h"
 #include "./../include/tvectorporo.h"
 
@@ -14,9 +16,9 @@ class TABBPoro{
     friend ostream & operator<<(ostream &,const TABBPoro &);
     private:
         TNodoABB *nodo;
-        void InordenAux(const TVectorPoro &,int &);
-        void PreordenAux(const TVectorPoro &,int &);
-        void PostordenAux(const TVectorPoro &,int &);
+        void InordenAux(TVectorPoro &,int &) const;
+        void PreordenAux(TVectorPoro &,int &);
+        void PostordenAux(TVectorPoro &,int &);
 
     public:
         TABBPoro();
@@ -33,7 +35,7 @@ class TABBPoro{
         int Altura()const ;
         int Nodos()const ;
         int NodosHoja()const ;
-        TVectorPoro Inorden();
+        TVectorPoro Inorden() const;
         TVectorPoro Preorden();
         TVectorPoro Postorden();
         TVectorPoro Niveles()const ;
