@@ -17,8 +17,9 @@ class TABBPoro{
     private:
         TNodoABB *nodo;
         void InordenAux(TVectorPoro &,int &) const;
-        void PreordenAux(TVectorPoro &,int &);
-        void PostordenAux(TVectorPoro &,int &);
+        void PreordenAux(TVectorPoro &,int &) const;
+        void PostordenAux(TVectorPoro &,int &) const;
+        void NivelesAux(TVectorPoro &,int , int &) const;
 
     public:
         TABBPoro();

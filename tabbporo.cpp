@@ -50,8 +50,8 @@ void TABBPoro::InordenAux(TVectorPoro &v,int &pos) const{
     }
 }
 
-void TABBPoro::PreordenAux(TVectorPoro &v,int &pos){
-    if (this->EsVacio()){
+void TABBPoro::PreordenAux(TVectorPoro &v,int &pos) const{
+    if (!this->EsVacio()){
         v[pos] = nodo->item;                 // Visitar nodo actual (la raíz)
         pos++;                               // Incrementar posición
         nodo->iz.PreordenAux(v, pos);         // Visitar subárbol izquierdo
@@ -59,13 +59,24 @@ void TABBPoro::PreordenAux(TVectorPoro &v,int &pos){
     }
 }
 
-void TABBPoro::PostordenAux(TVectorPoro &v,int &pos){
-    if (this->EsVacio())
+void TABBPoro::PostordenAux(TVectorPoro &v,int &pos) const{
+    if (!this->EsVacio())
     {
         nodo->iz.PostordenAux(v, pos);       // Visitar subárbol izquierdo
         nodo->de.PostordenAux(v, pos);       // Visitar subárbol derecho
         v[pos] = nodo->item;                 // Visitar nodo actual (la raíz)
         pos++;
+    }
+}
+
+void TABBPoro::NivelesAux(TVectorPoro &v,int n, int &pos) const{
+    if (EsVacio()) return;
+
+    if (n == 1) {
+        v[pos++] = nodo->item;
+    } else {
+        nodo->iz.NivelesAux(v, n - 1, pos);
+        nodo->de.NivelesAux(v, n - 1, pos);
     }
 }
 
@@ -141,11 +152,48 @@ bool TABBPoro::Insertar(TPoro &tp){
 }
 
 bool TABBPoro::Borrar(TPoro &tp){
-
+    if(this->EsVacio()){
+        return false;
+    }
+    else if(!this->Buscar(tp)){
+        return false;
+    }
+    else{
+        if(this->nodo->item==tp){
+            if(this->nodo->iz.EsVacio() && this->nodo->de.EsVacio()){
+                this->nodo = new TNodoABB();
+                return true; 
+            }
+            else{
+                if(!this->nodo->iz.EsVacio()){
+                    TABBPoro* mayor = &this->nodo->iz;
+    
+                    while (!mayor->nodo->de.EsVacio()) {
+                        mayor = &mayor->nodo->de;
+                    }
+    
+                    // Copiar el item
+                    this->nodo->item = mayor->nodo->item;
+                    // Borrar ese nodo ahora duplicado
+                    this->nodo->iz.Borrar(mayor->nodo->item);
+                    return true;
+    
+                }
+                else{
+                    this->nodo=this->nodo->de.nodo;
+                    return true;
+                }
+            }
+        }
+        else{
+            return this->nodo->iz.Borrar(tp) || this->nodo->de.Borrar(tp);
+        }
+    }
 }
 
 bool TABBPoro::Buscar(const TPoro &tp){
     TPoro raiz = this->Raiz();
+
     if(raiz.EsVacio()){
         return false;
     }
@@ -184,9 +232,12 @@ int TABBPoro::Nodos()const{
 
 int TABBPoro::NodosHoja()const{
     if(this->EsVacio()){
+        return 0;
+    }
+    if(this->nodo->iz.EsVacio() && this->nodo->de.EsVacio()){
         return 1;
     }
-    return 0 + this->nodo->iz.Nodos() + this->nodo->de.Nodos();
+    return 0 + this->nodo->iz.NodosHoja() + this->nodo->de.NodosHoja();
 }
 
 TVectorPoro TABBPoro::Inorden() const{
@@ -220,26 +271,61 @@ TVectorPoro TABBPoro::Postorden(){
 }
 
 TVectorPoro TABBPoro::Niveles()const{
+    int total_nodos = Nodos();
+    TVectorPoro resultado(total_nodos);
+    int pos = 1;
 
+    int h = Altura();
+    for (int i = 1; i <= h; i++) {
+        NivelesAux(resultado, i, pos);  // Añadir todos los nodos del nivel i
+    }
+
+    return resultado;
 }
 
 TABBPoro TABBPoro::operator+( TABBPoro &tabbp){
-    TABBPoro resultado = *this;
-    TVectorPoro aux = tabbp.Inorden();
-    for(int i=0;i<aux.Longitud();i++){
-        resultado.Insertar(aux[i]);
+    TABBPoro resultado;
+    if(this->EsVacio() && tabbp.EsVacio()){
+        return TABBPoro();
     }
-    return resultado;
+    else if(this->EsVacio()){
+        return resultado = tabbp;
+    }
+    else if(tabbp.EsVacio()){
+        return resultado = *this;
+    }
+    else{
+        resultado = *this;
+
+        TVectorPoro aux = tabbp.Inorden();
+        for(int i=1;i<=aux.Longitud();i++){
+            resultado.Insertar(aux[i]);
+        }
+        return resultado;
+    }
 }
 
 TABBPoro TABBPoro::operator-( TABBPoro &tabbp){
     TABBPoro resultado;
-    TVectorPoro aux = this->Inorden();
-    for(int i=0;i<aux.Longitud();i++){
-        if(!tabbp.Buscar(aux[i])){
-            resultado.Insertar(aux[i]);
-        }
+    if(this->EsVacio() && tabbp.EsVacio()){
+        return TABBPoro();
     }
-    return resultado;
+    else if(this->EsVacio()){
+        return TABBPoro();
+    }
+    else if(tabbp.EsVacio()){
+        return resultado = *this;
+    }
+    else{
+        TVectorPoro aux = this->Inorden();
+
+        for(int i=1;i<=aux.Longitud();i++){
+            TPoro poro_pos = TPoro(aux[i]);
+            if(!tabbp.Buscar(poro_pos)){
+                resultado.Insertar(poro_pos);
+            }
+        }
+        return resultado;
+    }
 }
 
